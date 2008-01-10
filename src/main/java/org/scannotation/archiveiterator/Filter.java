@@ -1,4 +1,4 @@
-package org.scannotation.classpath;
+package org.scannotation.archiveiterator;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

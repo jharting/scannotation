@@ -1,4 +1,4 @@
-package org.scannotation.classpath;
+package org.scannotation;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

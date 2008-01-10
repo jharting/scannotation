@@ -1,4 +1,4 @@
-package org.scannotation.classpath;
+package org.scannotation;
 
 import java.io.File;
 import java.io.IOException;

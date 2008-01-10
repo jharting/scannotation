@@ -1,4 +1,4 @@
-package org.scannotation.classpath;
+package org.scannotation.archiveiterator;
 
 import java.io.InputStream;
 import java.io.IOException;

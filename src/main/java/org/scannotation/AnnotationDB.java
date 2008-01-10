@@ -6,9 +6,9 @@ import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.annotation.Annotation;
-import org.scannotation.classpath.Filter;
-import org.scannotation.classpath.IteratorFactory;
-import org.scannotation.classpath.StreamIterator;
+import org.scannotation.archiveiterator.Filter;
+import org.scannotation.archiveiterator.IteratorFactory;
+import org.scannotation.archiveiterator.StreamIterator;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

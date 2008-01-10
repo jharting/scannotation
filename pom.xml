@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.scannotation</groupId>
-    <artifactId>annotation-db</artifactId>
+    <artifactId>scannotation</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>resteasy-jsr311</name>
+    <name>scannotation</name>
     <url>http://maven.apache.org</url>
     <repositories>
         <repository>
@@ -38,6 +38,14 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
     <build>
         <plugins>
             <plugin>

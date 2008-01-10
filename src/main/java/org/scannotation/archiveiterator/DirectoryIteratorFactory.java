@@ -1,4 +1,4 @@
-package org.scannotation.classpath;
+package org.scannotation.archiveiterator;
 
 import java.io.IOException;
 import java.net.URL;

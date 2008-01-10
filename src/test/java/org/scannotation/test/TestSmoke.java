@@ -4,7 +4,7 @@ import com.titan.domain.Address;
 import org.junit.Assert;
 import org.junit.Test;
 import org.scannotation.AnnotationDB;
-import org.scannotation.classpath.ClasspathUrlFinder;
+import org.scannotation.ClasspathUrlFinder;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,6 +41,7 @@ public class TestSmoke
       if (System.getProperty("java.class.path").indexOf("titan-cruise-1.0.jar") == -1)
       {
          System.err.println("WARNING!!!!!!!! CANNOT TEST testFindClasspaths():  This is a Maven2 and Surefire problem in that it doesn't set java.class.path correctly.  I run this test within the IDE");
+         return;
       }
 
       URL[] urls = ClasspathUrlFinder.findClassPaths("titan-cruise-1.0.jar");
@@ -56,6 +57,7 @@ public class TestSmoke
       if (System.getProperty("java.class.path").indexOf("titan-cruise-1.0.jar") == -1)
       {
          System.err.println("WARNING!!!!!!! CANNOT TEST testFindClasspaths2():  This is a Maven2 and Surefire problem in that it doesn't set java.class.path correctly.  I run this test within the IDE");
+         return;
       }
 
       URL[] urls = ClasspathUrlFinder.findClassPaths();
