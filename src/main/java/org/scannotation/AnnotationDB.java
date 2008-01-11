@@ -25,6 +25,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * The class allows you to scan an arbitrary set of "archives" for .class files.  These class files
+ * are parsed to see what annotations they use.  Two indexes are created.
+ *
+ * One is a map of annotations and what classes
+ * use those annotations.   This could be used, for example, by an EJB deployer to find all the EJBs contained
+ * in the archive
+ *
+ * Another is a mpa of classes and what annotations those classes use.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -102,31 +111,62 @@ public class AnnotationDB implements Serializable
 
    }
 
+   /**
+    * returns a map keyed by the fully qualified string name of a annotation class.  The Set returne is
+    * a list of classes that use that annotation somehow.
+    *
+    */
    public Map<String, Set<String>> getAnnotationIndex()
    {
       return annotationIndex;
    }
 
+   /**
+    * returns a map keyed by the list of classes scanned.  The value set returned is a list of annotations
+    * used by that class.
+    *
+    */
    public Map<String, Set<String>> getClassIndex()
    {
       return classIndex;
    }
 
+
+   /**
+    * Whether or not you want AnnotationDB to scan for class level annotations
+    *
+    * @param scanClassAnnotations
+    */
    public void setScanClassAnnotations(boolean scanClassAnnotations)
    {
       this.scanClassAnnotations = scanClassAnnotations;
    }
 
+   /**
+    * Wheter or not you want AnnotationDB to scan for method level annotations
+    *
+    * @param scanMethodAnnotations
+    */
    public void setScanMethodAnnotations(boolean scanMethodAnnotations)
    {
       this.scanMethodAnnotations = scanMethodAnnotations;
    }
 
+   /**
+    * Whether or not you want AnnotationDB to scan for parameter level annotations
+    *
+    * @param scanParameterAnnotations
+    */
    public void setScanParameterAnnotations(boolean scanParameterAnnotations)
    {
       this.scanParameterAnnotations = scanParameterAnnotations;
    }
 
+   /**
+    * Whether or not you want AnnotationDB to scan for parameter level annotations
+    *
+    * @param scanFieldAnnotations
+    */
    public void setScanFieldAnnotations(boolean scanFieldAnnotations)
    {
       this.scanFieldAnnotations = scanFieldAnnotations;
@@ -136,7 +176,7 @@ public class AnnotationDB implements Serializable
    /**
     * Scan a url that represents an "archive"  this is a classpath directory or jar file
     *
-    * @param url
+    * @param urls variable list of URLs to scan as archives
     * @throws IOException
     */
    public void scanArchives(URL... urls) throws IOException
@@ -160,9 +200,9 @@ public class AnnotationDB implements Serializable
    }
 
    /**
-    * Can a .class file for annotations
+    * Parse a .class file for annotations
     *
-    * @param bits
+    * @param bits input stream pointing to .class file bits
     * @throws IOException
     */
    public void scanClass(InputStream bits) throws IOException
@@ -281,7 +321,12 @@ public class AnnotationDB implements Serializable
       }
    }
 
-   public void outputAnnotationDB(PrintWriter writer)
+   /**
+    * Prints out annotationIndex
+    *
+    * @param writer
+    */
+   public void outputAnnotationIndex(PrintWriter writer)
    {
       for (String ann : annotationIndex.keySet())
       {
