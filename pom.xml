@@ -4,7 +4,7 @@
     <groupId>org.scannotation</groupId>
     <artifactId>scannotation</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <name>scannotation</name>
     <url>http://maven.apache.org</url>
     <repositories>

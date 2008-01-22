@@ -7,6 +7,7 @@ import org.scannotation.AnnotationDB;
 import org.scannotation.ClasspathUrlFinder;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
@@ -105,6 +106,18 @@ public class TestSmoke
 
       Set<String> simpleAnnotations = db.getClassIndex().get(CrossRef.class.getName());
       Assert.assertTrue(simpleAnnotations.contains(SimpleAnnotation.class.getName()));
+   }
+
+
+   @Test
+   public void testCrossRefMetaAnnotations() throws Exception
+   {
+      URL url = ClasspathUrlFinder.findClassBase(TestSmoke.class);
+      AnnotationDB db = new AnnotationDB();
+      db.scanArchives(url);
+      db.crossReferenceMetaAnnotations();
+
+      Assert.assertTrue(db.getAnnotationIndex().get(MetaAnnotation.class.getName()).contains(CrossRefMetaAnnotaiton.class.getName()));
    }
 
 

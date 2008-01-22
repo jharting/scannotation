@@ -26,7 +26,8 @@ import java.util.Set;
 
 /**
  * The class allows you to scan an arbitrary set of "archives" for .class files.  These class files
- * are parsed to see what annotations they use.  Two indexes are created.
+ * are parsed to see what annotations they use.  Two indexes are created.  The javax, java, sun, com.sun, and javassist
+ * packages will not be scanned by default.
  *
  * One is a map of annotations and what classes
  * use those annotations.   This could be used, for example, by an EJB deployer to find all the EJBs contained
@@ -47,20 +48,103 @@ public class AnnotationDB implements Serializable
    protected transient boolean scanMethodAnnotations = true;
    protected transient boolean scanParameterAnnotations = true;
    protected transient boolean scanFieldAnnotations = true;
+   protected transient String[] ignoredPackages = {"javax", "java", "sun", "com.sun", "javassist"};
 
-   public class CrossReferenceException extends RuntimeException
+   public class CrossReferenceException extends Exception
    {
-      private Map<String, Set<String>> unresolved;
+      private Set<String> unresolved;
 
-      public CrossReferenceException(Map<String, Set<String>> unresolved)
+      public CrossReferenceException(Set<String> unresolved)
       {
          this.unresolved = unresolved;
       }
 
-      public Map<String, Set<String>> getUnresolved()
+      public Set<String> getUnresolved()
       {
          return unresolved;
       }
+   }
+
+   public String[] getIgnoredPackages()
+   {
+      return ignoredPackages;
+   }
+
+   /**
+    * Override/overwrite any ignored packages
+    *
+    * @param ignoredPackages cannot be null
+    */
+   public void setIgnoredPackages(String[] ignoredPackages)
+   {
+      this.ignoredPackages = ignoredPackages;
+   }
+
+   public void addIgnoredPackages(String... ignored)
+   {
+      String[] tmp = new String[ignoredPackages.length + ignored.length];
+      int i = 0;
+      for (String ign : ignoredPackages) tmp[i++] = ign;
+      for (String ign : ignored) tmp[i++] = ign;
+   }
+
+   /**
+    * This method will cross reference annotations in the annotation index with any meta-annotations that they have
+    * and create additional entries as needed.  For example:
+    *
+    * @HttpMethod("GET")
+    * public @interface GET {}
+    *
+    * The HttpMethod index will have additional classes added to it for any classes annotated with annotations that
+    * have the HttpMethod meta-annotation.
+    *
+    * WARNING: If the annotation class has not already been scaned, this method will load all annotation classes indexed
+    *  as a resource so they must be in your classpath
+    *
+    *
+    */
+   public void crossReferenceMetaAnnotations() throws CrossReferenceException
+   {
+      Set<String> unresolved = new HashSet<String>();
+
+      Set<String> index = new HashSet<String>();
+      index.addAll(annotationIndex.keySet());
+
+      for (String annotation : index)
+      {
+         if (ignoreScan(annotation))
+         {
+            continue;
+         }
+         if (classIndex.containsKey(annotation))
+         {
+            for (String xref : classIndex.get(annotation))
+            {
+               annotationIndex.get(xref).addAll(annotationIndex.get(annotation));
+            }
+            continue;
+         }
+         InputStream bits = Thread.currentThread().getContextClassLoader().getResourceAsStream(annotation.replace('.', '/') + ".class");
+         if (bits == null)
+         {
+            unresolved.add(annotation);
+            continue;
+         }
+         try
+         {
+            scanClass(bits);
+         }
+         catch (IOException e)
+         {
+            unresolved.add(annotation);
+         }
+         for (String xref : classIndex.get(annotation))
+         {
+            annotationIndex.get(xref).addAll(annotationIndex.get(annotation));
+         }
+         
+      }
+      if (unresolved.size() > 0) throw new CrossReferenceException(unresolved);
    }
 
    /**
@@ -70,34 +154,22 @@ public class AnnotationDB implements Serializable
     * classIndex indexes
     *
     * @param ignoredPackages var arg list of packages to ignore
-    * @throws CrossReferenceException a RuntimeException thrown if referenced interfaces haven't been scanned
+    * @throws CrossReferenceException an Exception thrown if referenced interfaces haven't been scanned
     */
-   public void crossReferenceImplementedInterfaces(String... ignoredPackages) throws CrossReferenceException
+   public void crossReferenceImplementedInterfaces() throws CrossReferenceException
    {
-      Map<String, Set<String>> unresolved = new HashMap<String, Set<String>>();
+      Set<String> unresolved = new HashSet<String>();
       for (String clazz : implementsIndex.keySet())
       {
          Set<String> intfs = implementsIndex.get(clazz);
          for (String intf : intfs)
          {
-            if (intf.startsWith("java.") || intf.startsWith("javax.")) continue;
-            boolean ignoreInterface = false;
-            for (String ignored : ignoredPackages)
-            {
-               if (intf.startsWith(ignored + "."))
-               {
-                  ignoreInterface = true;
-                  break;
-               }
-            }
-            if (ignoreInterface) continue;
+            if (ignoreScan(intf)) continue;
 
-            Set<String> unresolvedInterfaces = new HashSet<String>();
             Set<String> xrefAnnotations = classIndex.get(intf);
             if (xrefAnnotations == null)
             {
-               unresolvedInterfaces.add(intf);
-               unresolved.put(clazz, unresolvedInterfaces);
+               unresolved.add(intf);
             }
             Set<String> classAnnotations = classIndex.get(clazz);
             classAnnotations.addAll(xrefAnnotations);
@@ -108,7 +180,24 @@ public class AnnotationDB implements Serializable
             }
          }
       }
+      if (unresolved.size() > 0) throw new CrossReferenceException(unresolved);
 
+   }
+
+   private boolean ignoreScan(String intf)
+   {
+      for (String ignored : ignoredPackages)
+      {
+         if (intf.startsWith(ignored + "."))
+         {
+            return  true;
+         }
+         else
+         {
+            //System.out.println("NOT IGNORING: " + intf);
+         }
+      }
+      return false;
    }
 
    /**
@@ -173,6 +262,7 @@ public class AnnotationDB implements Serializable
    }
 
 
+
    /**
     * Scan a url that represents an "archive"  this is a classpath directory or jar file
     *
@@ -187,7 +277,13 @@ public class AnnotationDB implements Serializable
          {
             public boolean accepts(String filename)
             {
-               return filename.endsWith(".class");
+               if (filename.endsWith(".class"))
+               {
+                  if (filename.startsWith("/")) filename = filename.substring(1);
+                  if (!ignoreScan(filename.replace('/', '.'))) return true;
+                  //System.out.println("IGNORED: " + filename);
+               }
+               return false;
             }
          };
 
@@ -299,8 +395,8 @@ public class AnnotationDB implements Serializable
 
          if (visible != null) populate(visible.getAnnotations(), cf.getName());
          if (invisible != null) populate(invisible.getAnnotations(), cf.getName());
-
       }
+
 
    }
 
