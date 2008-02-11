@@ -28,11 +28,11 @@ import java.util.Set;
  * The class allows you to scan an arbitrary set of "archives" for .class files.  These class files
  * are parsed to see what annotations they use.  Two indexes are created.  The javax, java, sun, com.sun, and javassist
  * packages will not be scanned by default.
- *
+ * <p/>
  * One is a map of annotations and what classes
  * use those annotations.   This could be used, for example, by an EJB deployer to find all the EJBs contained
  * in the archive
- *
+ * <p/>
  * Another is a mpa of classes and what annotations those classes use.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -92,16 +92,13 @@ public class AnnotationDB implements Serializable
     * This method will cross reference annotations in the annotation index with any meta-annotations that they have
     * and create additional entries as needed.  For example:
     *
-    * @HttpMethod("GET")
-    * public @interface GET {}
-    *
+    * @HttpMethod("GET") public @interface GET {}
+    * <p/>
     * The HttpMethod index will have additional classes added to it for any classes annotated with annotations that
     * have the HttpMethod meta-annotation.
-    *
+    * <p/>
     * WARNING: If the annotation class has not already been scaned, this method will load all annotation classes indexed
-    *  as a resource so they must be in your classpath
-    *
-    *
+    * as a resource so they must be in your classpath
     */
    public void crossReferenceMetaAnnotations() throws CrossReferenceException
    {
@@ -142,7 +139,7 @@ public class AnnotationDB implements Serializable
          {
             annotationIndex.get(xref).addAll(annotationIndex.get(annotation));
          }
-         
+
       }
       if (unresolved.size() > 0) throw new CrossReferenceException(unresolved);
    }
@@ -171,12 +168,19 @@ public class AnnotationDB implements Serializable
             {
                unresolved.add(intf);
             }
-            Set<String> classAnnotations = classIndex.get(clazz);
-            classAnnotations.addAll(xrefAnnotations);
-            for (String annotation : xrefAnnotations)
+            else
             {
-               Set<String> classes = annotationIndex.get(annotation);
-               classes.add(clazz);
+               Set<String> classAnnotations = classIndex.get(clazz);
+               if (classAnnotations == null)
+               {
+                  classIndex.put(clazz, xrefAnnotations);
+               }
+               else classAnnotations.addAll(xrefAnnotations);
+               for (String annotation : xrefAnnotations)
+               {
+                  Set<String> classes = annotationIndex.get(annotation);
+                  classes.add(clazz);
+               }
             }
          }
       }
@@ -190,7 +194,7 @@ public class AnnotationDB implements Serializable
       {
          if (intf.startsWith(ignored + "."))
          {
-            return  true;
+            return true;
          }
          else
          {
@@ -203,7 +207,6 @@ public class AnnotationDB implements Serializable
    /**
     * returns a map keyed by the fully qualified string name of a annotation class.  The Set returne is
     * a list of classes that use that annotation somehow.
-    *
     */
    public Map<String, Set<String>> getAnnotationIndex()
    {
@@ -213,7 +216,6 @@ public class AnnotationDB implements Serializable
    /**
     * returns a map keyed by the list of classes scanned.  The value set returned is a list of annotations
     * used by that class.
-    *
     */
    public Map<String, Set<String>> getClassIndex()
    {
@@ -260,7 +262,6 @@ public class AnnotationDB implements Serializable
    {
       this.scanFieldAnnotations = scanFieldAnnotations;
    }
-
 
 
    /**

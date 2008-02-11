@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
+import java.io.File;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -48,27 +49,21 @@ public class WarUrlFinder
     * if your servlet container does not extract the /WEB-INF/classes into a real file-based directory
     *
     * @param servletContext
-    * @return
+    * @return null if cannot determin /WEB-INF/classes
     */
    public static URL findWebInfClassesPath(ServletContext servletContext)
    {
-      Set libJars = servletContext.getResourcePaths("/WEB-INF/classes");
-      for (Object jar : libJars)
+      String path = servletContext.getRealPath("/WEB-INF/classes");
+      if (path == null) return null;
+      File fp = new File(path);
+      if (fp.exists() == false) return null;
+      try
       {
-         try
-         {
-            URL url = servletContext.getResource((String) jar);
-            String urlString = url.toString();
-            int index = urlString.lastIndexOf("/WEB-INF/classes/");
-            urlString = urlString.substring(0, index + "/WEB-INF/classes/".length());
-            return new URL(urlString);
-         }
-         catch (MalformedURLException e)
-         {
-            throw new RuntimeException(e);
-         }
+         return fp.toURL();
       }
-      return null;
-
+      catch (MalformedURLException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 }
