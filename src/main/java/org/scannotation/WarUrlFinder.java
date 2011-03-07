@@ -24,6 +24,13 @@ public class WarUrlFinder
    {
       ArrayList<URL> list = new ArrayList<URL>();
       Set libJars = servletContext.getResourcePaths("/WEB-INF/lib");
+      if (libJars == null)
+      {
+         URL[] empty = {};
+         return empty;
+      }
+        
+ 
       for (Object jar : libJars)
       {
          try

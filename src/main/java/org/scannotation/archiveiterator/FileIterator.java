@@ -28,19 +28,26 @@ public class FileIterator implements StreamIterator
          throw new RuntimeException(e);
       }
    }
-
-   protected static void create(List list, File dir, Filter filter) throws Exception
+    protected static void create(List list, File dir, Filter filter) throws Exception
+    {
+        create(list, dir, filter, dir.getCanonicalPath());
+    }
+   protected static void create(List list, File dir, Filter filter, String prefix) throws Exception
    {
       File[] files = dir.listFiles();
       for (int i = 0; i < files.length; i++)
       {
          if (files[i].isDirectory())
          {
-            create(list, files[i], filter);
+            create(list, files[i], filter, prefix);
          }
          else
          {
-            if (filter == null || filter.accepts(files[i].getAbsolutePath()))
+             String path = files[i].getCanonicalPath();
+             String relativePath = path.substring(prefix.length() + 1);
+             if (File.separatorChar == '\\')
+                 relativePath = relativePath.replace('\\', '/');
+             if (filter == null || filter.accepts(relativePath))
             {
                list.add(files[i]);
             }

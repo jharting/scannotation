@@ -49,6 +49,7 @@ public class AnnotationDB implements Serializable
    protected transient boolean scanParameterAnnotations = true;
    protected transient boolean scanFieldAnnotations = true;
    protected transient String[] ignoredPackages = {"javax", "java", "sun", "com.sun", "javassist"};
+   protected transient String[] scanPackages = null;
 
    public class CrossReferenceException extends Exception
    {
@@ -63,6 +64,22 @@ public class AnnotationDB implements Serializable
       {
          return unresolved;
       }
+   }
+
+   public String[] getScanPackages()
+   {
+      return scanPackages;
+   }
+
+   /**
+    * Set explicit packages to scan.
+    * Set to null to enable ignore list.
+    *
+    * @param scanPackages packages to scan or null
+    */
+   public void setScanPackages(String[] scanPackages)
+   {
+      this.scanPackages = scanPackages;
    }
 
    public String[] getIgnoredPackages()
@@ -86,6 +103,7 @@ public class AnnotationDB implements Serializable
       int i = 0;
       for (String ign : ignoredPackages) tmp[i++] = ign;
       for (String ign : ignored) tmp[i++] = ign;
+      this.ignoredPackages = tmp;
    }
 
    /**
@@ -190,6 +208,18 @@ public class AnnotationDB implements Serializable
 
    private boolean ignoreScan(String intf)
    {
+   	  if (scanPackages != null)
+   	  {
+	      for (String scan : scanPackages)
+	      {
+	      	 // do not ignore if on packages to scan list
+	         if (intf.startsWith(scan + "."))
+	         {
+	            return false;
+	         }
+	      }
+          return true; // didn't match whitelist, ignore
+   	  }
       for (String ignored : ignoredPackages)
       {
          if (intf.startsWith(ignored + "."))
@@ -280,8 +310,10 @@ public class AnnotationDB implements Serializable
             {
                if (filename.endsWith(".class"))
                {
-                  if (filename.startsWith("/")) filename = filename.substring(1);
-                  if (!ignoreScan(filename.replace('/', '.'))) return true;
+                  if (filename.startsWith("/") || filename.startsWith("\\"))
+                      filename = filename.substring(1);
+                  if (!ignoreScan(filename.replace('/', '.')))
+                      return true;
                   //System.out.println("IGNORED: " + filename);
                }
                return false;
@@ -310,8 +342,8 @@ public class AnnotationDB implements Serializable
       {
          cf = new ClassFile(dstream);
          classIndex.put(cf.getName(), new HashSet<String>());
-         if (scanClassAnnotations) ;
-         scanClass(cf);
+         if (scanClassAnnotations)
+            scanClass(cf);
          if (scanMethodAnnotations || scanParameterAnnotations) scanMethods(cf);
          if (scanFieldAnnotations) scanFields(cf);
 
