@@ -23,7 +23,7 @@ public class WarUrlFinder
    public static URL[] findWebInfLibClasspaths(ServletContext servletContext)
    {
       ArrayList<URL> list = new ArrayList<URL>();
-      Set libJars = servletContext.getResourcePaths("/WEB-INF/lib");
+      Set<String> libJars = servletContext.getResourcePaths("/WEB-INF/lib");
       if (libJars == null)
       {
          URL[] empty = {};

@@ -7,18 +7,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.scannotation.spi.StreamIterator;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class FileIterator implements StreamIterator
 {
-   private ArrayList files;
+   private ArrayList<File> files;
    private int index = 0;
 
    public FileIterator(File file, Filter filter)
    {
-      files = new ArrayList();
+      files = new ArrayList<File>();
       try
       {
          create(files, file, filter);
@@ -28,11 +30,11 @@ public class FileIterator implements StreamIterator
          throw new RuntimeException(e);
       }
    }
-    protected static void create(List list, File dir, Filter filter) throws Exception
+    protected static void create(List<File> list, File dir, Filter filter) throws Exception
     {
         create(list, dir, filter, dir.getCanonicalPath());
     }
-   protected static void create(List list, File dir, Filter filter, String prefix) throws Exception
+   protected static void create(List<File> list, File dir, Filter filter, String prefix) throws Exception
    {
       File[] files = dir.listFiles();
       for (int i = 0; i < files.length; i++)

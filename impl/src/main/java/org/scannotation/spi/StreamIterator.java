@@ -1,4 +1,4 @@
-package org.scannotation.archiveiterator;
+package org.scannotation.spi;
 
 import java.io.InputStream;
 
