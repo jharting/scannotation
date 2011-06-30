@@ -6,11 +6,13 @@ import java.net.URL;
 import org.scannotation.archiveiterator.Filter;
 
 /**
+ * Implement this interface to provide support for an additional protocol (VFS, HTTP, ...)
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @author <a href="http://community.jboss.org/people/jharting">Jozef Hartinger</a>
- * @version $Revision: 1 $
  */
 public interface StreamIteratorFactory {
+    
     StreamIterator create(URL url, Filter filter) throws IOException;
 
     /**

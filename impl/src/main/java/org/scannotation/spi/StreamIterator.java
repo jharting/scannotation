@@ -3,7 +3,8 @@ package org.scannotation.spi;
 import java.io.InputStream;
 
 /**
- * Simpler iterator than java.util.iterator.  Things like JarInputStream does not allow you to implement hasNext()
+ * Allows to iterate over the content of a directory, jar file, etc.
+ * Simpler iterator than java.util.iterator.  Things like JarInputStream does not allow you to implement hasNext().
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -11,7 +12,7 @@ import java.io.InputStream;
 public interface StreamIterator
 {
    /**
-    * User is resposible for closing the InputStream returned
+    * User is responsible for closing the InputStream returned
     *
     * @return null if no more streams left to iterate on
     */

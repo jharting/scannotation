@@ -105,7 +105,7 @@ public class ClasspathUrlFinder
     * @param clazz
     * @return
     */
-   public static URL findClassBase(Class clazz)
+   public static URL findClassBase(Class<?> clazz)
    {
       String resource = clazz.getName().replace('.', '/') + ".class";
       return findResourceBase(resource, clazz.getClassLoader());
@@ -129,7 +129,7 @@ public class ClasspathUrlFinder
          if (!fp.exists()) throw new RuntimeException("File in java.class.path does not exist: " + fp);
          try
          {
-            list.add(fp.toURL());
+            list.add(fp.toURI().toURL());
          }
          catch (MalformedURLException e)
          {
@@ -175,7 +175,7 @@ public class ClasspathUrlFinder
          if (!fp.exists()) throw new RuntimeException("File in java.class.path does not exists: " + fp);
          try
          {
-            list.add(fp.toURL());
+            list.add(fp.toURI().toURL());
          }
          catch (MalformedURLException e)
          {

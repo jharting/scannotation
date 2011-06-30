@@ -8,6 +8,26 @@
     <name>scannotation</name>
     <url>http://scannotation.sourceforge.net</url>
 
+    <developers>
+        <developer>
+            <id>patriot1burke</id>
+            <name>Bill Burke</name>
+            <email>bill@burkecentral.com</email>
+            <organization>JBoss</organization>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jharting</id>
+            <name>Jozef Hartinger</name>
+            <email>jharting@redhat.com</email>
+            <organization>Red Hat, Inc.</organization>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <javassist.version>3.13.0-GA</javassist.version>
         <jboss.javaee.version>1.0.0.Final</jboss.javaee.version>

@@ -66,7 +66,7 @@ public class WarUrlFinder
       if (fp.exists() == false) return null;
       try
       {
-         return fp.toURL();
+         return fp.toURI().toURL();
       }
       catch (MalformedURLException e)
       {
