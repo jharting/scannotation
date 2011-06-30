@@ -1,4 +1,4 @@
-package org.scannotation.test;
+package org.scannotation.test.annotationdb;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

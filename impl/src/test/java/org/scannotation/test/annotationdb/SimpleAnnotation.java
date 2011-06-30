@@ -1,4 +1,4 @@
-package org.scannotation.test;
+package org.scannotation.test.annotationdb;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -13,6 +13,10 @@
     <version>1.1-SNAPSHOT</version>
     <name>Scannotation</name>
 
+    <properties>
+        <shrinkwrap.version>1.0.0-alpha-12</shrinkwrap.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>
@@ -27,6 +31,18 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+            <scope>test</scope>
+            <version>${shrinkwrap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+            <scope>test</scope>
+            <version>${shrinkwrap.version}</version>
         </dependency>
     </dependencies>
 </project>
